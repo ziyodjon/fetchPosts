@@ -1,0 +1,11 @@
+.media-heading{
+    padding:5px;
+    cursor: pointer;
+    background:#ccc;
+}
+
+.comments{
+    padding:10px;
+    border-radius: 10px;
+    background-color: antiquewhite;
+}
