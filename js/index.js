@@ -1,6 +1,6 @@
 import * as api from './api.js';
 
-const limit = 10
+
 const app = document.getElementById('app');
 const CE = el => document.createElement(el);
 
@@ -43,35 +43,35 @@ function getAllComments(data){
     return commentWrap;
 }
 
-async function getPagination(allData){
-    const ulPage = document.querySelector('.pagination');
+// async function getPagination(allData){
+//     const ulPage = document.querySelector('.pagination');
     
     
-    let limit = 10;
-    let pageCount = allData.length / limit;
-    let pageStart = '';
-    let pageEnd = '';
-    let res = [];
+//     let limit = 10;
+//     let pageCount = allData.length / limit;
+//     let pageStart = '';
+//     let pageEnd = '';
+//     let res = [];
     
-    for(let i = 1; pageCount >= i; i++){
-        const pageLi = CE('li');
-        const pageLink = CE('a');
-        pageLi.append(pageLink);
+//     for(let i = 1; pageCount >= i; i++){
+//         const pageLi = CE('li');
+//         const pageLink = CE('a');
+//         pageLi.append(pageLink);
         
-        pageLink.textContent = i;
-        pageLink.addEventListener('click', async(event) => {
-            const page = event.target.innerHTML;
-            pageStart = limit * (page - 1);
-            pageEnd = limit * page;
-            res = allData.slice(pageStart,pageEnd);
-        });
+//         pageLink.textContent = i;
+//         pageLink.addEventListener('click', async(event) => {
+//             const page = event.target.innerHTML;
+//             pageStart = limit * (page - 1);
+//             pageEnd = limit * page;
+//             res = allData.slice(pageStart,pageEnd);
+//         });
         
         
         
-        ulPage.append(pageLi);
-    }
-    return ulPage;
-}
+//         ulPage.append(pageLi);
+//     }
+//     return ulPage;
+// }
 
 
 function getListEl(listArr){
