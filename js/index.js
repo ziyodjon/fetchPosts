@@ -1,5 +1,6 @@
 import * as api from './api.js';
 
+const limit = 10
 const app = document.getElementById('app');
 const CE = el => document.createElement(el);
 
@@ -7,11 +8,17 @@ function getOnePost(data){
     const postDetailWrap = CE('div');
     const postDetailTitle = CE('h2');
     const postDetailBody = CE('p');
+    const allPostsBtn = CE('button');
+    allPostsBtn.textContent = 'Back';
+    allPostsBtn.addEventListener('click', async () => {
+        app.innerHTML = '';
+        app.append(getListEl(await api.getPosts()));
+    });
     const hr = CE('hr');
 
     postDetailTitle.textContent = data.title;
     postDetailBody.textContent = data.title;
-    postDetailWrap.append(postDetailTitle,postDetailBody,hr);
+    postDetailWrap.append(postDetailTitle,postDetailBody,allPostsBtn,hr);
 
     return postDetailWrap;
 }
@@ -36,11 +43,41 @@ function getAllComments(data){
     return commentWrap;
 }
 
-function getListEl(listArr){
+async function getPagination(allData){
+    const ulPage = document.querySelector('.pagination');
     
+    
+    let limit = 10;
+    let pageCount = allData.length / limit;
+    let pageStart = '';
+    let pageEnd = '';
+    let res = [];
+    
+    for(let i = 1; pageCount >= i; i++){
+        const pageLi = CE('li');
+        const pageLink = CE('a');
+        pageLi.append(pageLink);
+        
+        pageLink.textContent = i;
+        pageLink.addEventListener('click', async(event) => {
+            const page = event.target.innerHTML;
+            pageStart = limit * (page - 1);
+            pageEnd = limit * page;
+            res = allData.slice(pageStart,pageEnd);
+        });
+        
+        
+        
+        ulPage.append(pageLi);
+    }
+    return ulPage;
+}
+
+
+function getListEl(listArr){
     const mediaWrapper = CE('div');
     mediaWrapper.classList.add('media-wrapper');
-    
+    //limit * (page - 1), limit * page
     listArr.forEach(el => {
         const media = CE('div');
         media.classList.add('media');
@@ -51,7 +88,6 @@ function getListEl(listArr){
         mediaHeading.classList.add('media-heading');
         mediaHeading.textContent = el.title;
         mediaHeading.addEventListener('click',async (elem) => {
-            console.log(el);
             app.innerHTML = ''
             app.append(getOnePost(await api.getPost(el.id)), getAllComments(await api.getComments(el.id)));
         });
