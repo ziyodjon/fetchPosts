@@ -7,6 +7,16 @@ const ulPage = document.querySelector('.pagination');
 let pageStart = 0;
 let pageEnd = 10;
 
+function showLoader(){
+    const loader = document.querySelector('.loader');
+    loader.style.display = 'block';
+}
+
+function hideLoader(){
+    const loader = document.querySelector('.loader');
+    loader.style.display = 'none';
+}
+
 function getOnePost(data){
     const postDetailWrap = CE('div');
     const postDetailTitle = CE('h2');
@@ -15,8 +25,10 @@ function getOnePost(data){
     allPostsBtn.textContent = 'Back';
     allPostsBtn.addEventListener('click', async () => {
         app.innerHTML = '';
-        
-        app.append(getListEl(await api.getPosts()),getPagination(await api.getPosts()));
+        showLoader();
+        app.append(getListEl(printPagination(await api.getPosts(),pageStart,pageEnd)),await getPagination());
+        hideLoader();
+        //app.append(getListEl(await api.getPosts()),getPagination(await api.getPosts()));
     });
     const hr = CE('hr');
     
@@ -48,15 +60,12 @@ function getAllComments(data){
     return commentWrap;
 }
 
-async function getPagination(allData){
-    
-    
-    // let pageStart = '';
-    // let pageEnd = '';
+async function getPagination(){
+    const allData = await api.getPosts()
     
     let limit = 10;
-    let pageCount = allData.length / limit;
-    
+    let pageCount = await allData.length / limit;
+    ulPage.innerHTML = ''
     for(let i = 1; pageCount >= i; i++){
         const pageLi = CE('li');
         const pageLink = CE('a');
@@ -64,15 +73,16 @@ async function getPagination(allData){
         
         pageLink.textContent = i;
         ulPage.append(pageLi);
-        pageLink.addEventListener('click', async(event) => {
+        pageLink.addEventListener('click',async (event) => {
             app.innerHTML = '';
             
             const page = event.target.innerHTML;
-            console.log(page);
+            //console.log(page);
             pageStart = limit * (page - 1);
             pageEnd = limit * page;
-
-            app.append(getListEl(printPagination(allData,pageStart,pageEnd)));
+            showLoader();
+            app.append(getListEl(printPagination(allData,pageStart,pageEnd)),await getPagination());
+            hideLoader();
         }); 
     }
 
@@ -99,7 +109,9 @@ function getListEl(listArr){
         mediaHeading.addEventListener('click',async (elem) => {
             app.innerHTML = '';
             ulPage.innerHTML = '';
+            showLoader();
             app.append(getOnePost(await api.getPost(el.id)), getAllComments(await api.getComments(el.id)));
+            hideLoader();
         });
 
         const mediaText = CE('p');
@@ -112,7 +124,9 @@ function getListEl(listArr){
     
     return mediaWrapper;
 }
+showLoader();
+app.append(await getListEl(printPagination(await api.getPosts(),pageStart,pageEnd)),await getPagination());
+hideLoader();
 
-app.append(getListEl(printPagination(await api.getPosts(),pageStart,pageEnd)),getPagination(await api.getPosts()));
 
-
+// printPagination(await api.getPosts(),pageStart,pageEnd)
